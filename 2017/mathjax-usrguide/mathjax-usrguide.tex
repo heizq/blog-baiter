@@ -1,0 +1,226 @@
+%!TEX program = xelatex
+\documentclass[UTF8]{ctexart}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+\title{MathJax 使用说明}
+\author{黑志强}
+\date{\today}
+
+\begin{document}
+ \maketitle
+ \tableofcontents
+
+\begin{figure}[ht!]
+\center{\includegraphics[width=\linewidth]{mathjax.png}}
+\end{figure}
+
+\section{MathJax 使用版本说明}
+使用MathJax 版本 2.7.0 。
+
+\section{MathJax 配置项}
+
+
+\subsection{mathJaxConfig.js}
+\medskip
+\begin{lstlisting}
+
+// MathJax 配置信息
+
+window.MathJax = {
+  showProcessingMessages: false,
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [['$', '$'], ["\\(", "\\)"]],
+    processEscapes: true
+  },
+  "fast-preview": {disabled: true},
+  CommonHTML: { linebreaks: { automatic: true } },
+  "HTML-CSS": { linebreaks: { automatic: true } //This controls the automatic breaking of expressions:
+                          // when false, only linebreak="newline" is processed;
+                          // when true, line breaks are inserted automatically in long expressions.
+    ,extensions: ["handle-floats.js"] // cause equation numbers to overlap the floating content. To avoid this
+},
+  SVG: { linebreaks: { automatic: true } },
+  TeX: { noErrors: { disabled: true } },
+  MathMenu: {
+    styles: {
+      ".MathJax_Menu": {"z-index":2001}
+    }
+  },
+  AuthorInit: function () {
+    MathJax.Hub.Register.StartupHook("MathMenu Ready",function () {MathJax.Menu.BGSTYLE["z-index"] = 2000;});
+    MathJax.Hub.processSectionDelay = 0;
+  }
+}
+
+
+\end{lstlisting}
+
+\section{MathJax js引用}
+\subsection{mathJax.inc.jsp}
+外部jsp需要包含此jsp，或者外部jsp 包含以下jsp 代码,其中第6,7,8行引入次序不能打乱。
+
+\begin{lstlisting}[language=html]
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Incorrect or missing viewport information can confuse MathJax’s layout process, leading to very small font sizes.
+We recommend to use standard values such as the following:  -->
+<jawr:script src="/bundles/mathJaxConfig.js"></jawr:script>
+<script type="text/javascript" src="plugin/MathJax/MathJax.js?config=TeX-AMS_CHTML"></script>
+<jawr:script src="/bundles/mathJaxUtil.js"></jawr:script>
+
+\end{lstlisting}
+
+\section{MathJax 工具类}
+
+\subsection{mathJaxUtil.js}
+使用自执行函数，采用松散增量方式，模块内将update()方法曝露出来，供外部js调用。
+
+\begin{lstlisting}
+
+/**
+ * user-defined MathJax util
+ */
+var MathJaxUtil = (function(jaxUtil){
+    /**
+     * // 目 的 是 将 这 种 \[ 10<x<20 \],转 换 为 \[ 10< x< 20 \]
+     * @param str
+     * @returns {*}
+     */
+    function getFormatFormula(str){
+        var regex=/(?:(\${1,2}(?!\$))|(\\\()|(\\\[)|(\\begin\{equation\}))(.*?)(?:(\${1,2}(?!\$))|(\\\)|(\\\]|\\end\{equation\})))/gm;
+        var myRe;
+        while ((myRe = regex.exec(str)) !== null) {
+            var msg = myRe[5];
+            var repmsg = msg.replace(/</g,'< ');
+            str = str.replace(msg,repmsg) ;
+        }
+        return str;
+    };
+    /**
+     * check str contain latex fomula or not
+     * @param str
+     * @returns {boolean}
+     */
+    function isContainFormula(str){
+        var reg=/(?:(\${1,2}(?!\$))|(\\\()|(\\\[)|(\\begin\{equation\}))(.*?)(?:(\${1,2}(?!\$))|(\\\)|(\\\]|\\end\{equation\})))/gm;
+        return reg.test(str);
+
+    };
+
+    /**
+     *  get format fomula
+     * @param str
+     * @returns {*}
+     */
+    jaxUtil.formatFomula = function(str){
+        if(isContainFormula(str)){
+            return getFormatFormula(str);
+        }else{
+            return str;
+        }
+    };
+
+    /**
+     * render htmlnode which has latex
+     * @param obj
+     * @param str
+     */
+    jaxUtil.renderNodeWithString = function(obj,str){
+        if(isContainFormula(str)){
+            $(obj).append(getFormatFormula(str));
+            MathJax.Hub.Queue(["Typeset",MathJax.Hub,obj.lastChild]);
+        }else{
+            $(obj).append(str);
+        }
+    };
+
+    /**
+     * render html node
+     * @param obj
+     */
+    jaxUtil.renderNode = function(obj){
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub,obj]);
+    };
+
+    /**
+     * render html all
+     */
+    jaxUtil.render = function(){
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    };
+
+    return jaxUtil;
+}(MathJaxUtil || {}));
+
+
+
+\end{lstlisting}
+
+\section{外部js调用方式}
+
+\begin{lstlisting}
+//$div是html元素，jsonObject是试题信息json
+var $div = document.getElementById("_div")
+MathJaxUtil.update($div,renderJudge(jsonObject));
+\end{lstlisting}
+
+
+\begin{thebibliography}{1}
+
+\bibitem{}
+\newblock {\em The {\LaTeX} Companion}
+\newblock https://www.latex-project.org/
+
+\bibitem{}
+\newblock {\em MathJax}
+\newblock https://www.mathjax.org/
+
+\bibitem{}
+\newblock {\em 在线 \LaTeX 编辑器}
+\newblock http://latex.codecogs.com/eqneditor/editor.php
+
+\bibitem{}
+\newblock {\em 在线 \LaTeX 编辑器2}
+\newblock http://zh.numberempire.com/texequationeditor/equationeditor.php
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,244 @@
+%!TEX program = xelatex
+\documentclass[UTF8]{ctexart}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+\title{help-api usrguide }
+\author{黑志强}
+\date{2016-11-17}
+
+\begin{document}
+ \maketitle
+ \tableofcontents
+
+
+\section{帮助管理 api user guide}
+
+help/tree  查询左边帮助菜单树
+
+help/modify   修改或新增 帮助菜单（json）
+
+help/modifyDocument   修改或新增 帮助文档内容
+
+help/delete   删除菜单
+
+help/search   查找内容
+
+help/\{id\}     根据菜单 主键 id 查 内容
+
+help/showResource 获取视频资源信息
+
+file/upload   上传文件
+
+
+
+
+\subsection{help/tree  查询左边帮助菜单树}
+dataType: 'json', type: "POST",没有参数，直接调用。
+
+\medskip
+\begin{lstlisting}
+
+\end{lstlisting}
+
+
+\subsection{help/modify   修改或新增 帮助菜单（json）}
+
+dataType: 'json', type: "POST",传入json 包含如果有要删除的节点id(要存放在 removeObjs 中)。
+
+传参json sample：
+\begin{lstlisting}[language=javascript]
+
+{
+  "id": "23454678",
+  "name": "帮助首页",
+  "parentId": "0",
+  "sort": 0,
+  "createUserId": "45648dsfsd44adf",
+  "createUser": "寒光",
+  "createTime": "2016-02-10 11:12:33",
+  "updateUserId": "546awer321df",
+  "updateUser": "打卡机",
+  "updateTime": "2016-02-10 11:12:33",
+  "children": [
+    {
+      "id": "15645641",
+      "name": "留言",
+      "parentId": "23454678",
+      "sort": 0,
+      "createUserId": "45648dsfsd44adf",
+      "createUser": "寒光",
+      "createTime": "2016-02-10 11:12:33",
+      "updateUserId": "546awer321df",
+      "updateUser": "打卡机",
+      "updateTime": "2016-02-10 11:12:33",
+      "children": []
+    },
+    {
+      "id": "25412124",
+      "name": "备课",
+      "parentId": "23454678",
+      "sort": 1,
+      "createUserId": "45648dsfsd44adf",
+      "createUser": "寒光",
+      "createTime": "2016-02-10 11:12:33",
+      "updateUserId": "546awer321df",
+      "updateUser": "打卡机",
+      "updateTime": "2016-02-10 11:12:33",
+      "children": [
+        {
+          "id": "2154sdf",
+          "name": "新增备课",
+          "parentId": "25412124",
+          "sort": 0,
+          "createUserId": "45648dsfsd44adf",
+          "createUser": "寒光",
+          "createTime": "2016-02-10 11:12:33",
+          "updateUserId": "546awer321df",
+          "updateUser": "打卡机",
+          "updateTime": "2016-02-10 11:12:33",
+          "children": []
+        },
+        {
+          "id": "154541114",
+          "name": "更换备课本",
+          "parentId": "25412124",
+          "sort": 1,
+          "createUserId": "45648dsfsd44adf",
+          "createUser": "寒光",
+          "createTime": "2016-02-10 11:12:33",
+          "updateUserId": "546awer321df",
+          "updateUser": "打卡机",
+          "updateTime": "2016-02-10 11:12:33",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "215647",
+      "name": "我的课堂",
+      "parentId": "23454678",
+      "sort": 2,
+      "createUserId": "45648dsfsd44adf",
+      "createUser": "寒光",
+      "createTime": "2016-02-10 11:12:33",
+      "updateUserId": "546awer321df",
+      "updateUser": "打卡机",
+      "updateTime": "2016-02-10 11:12:33",
+      "children": []
+    }
+  ],
+  "removeObjs": [
+    {
+      "id": "123"
+    },
+    {
+      "id": "54"
+    },
+    {
+      "id": "698"
+    }
+  ]
+}
+\end{lstlisting}
+
+\subsection{help/modifyDocument   修改或新增 帮助文档内容}
+dataType: 'json', type: "POST",传参 json。
+
+resourcePath:如果有多个视频，用英文*隔开。
+
+\begin{lstlisting}
+{
+  "id": "1235477",
+  "helpId": "25412124",
+  "text": "新增备课Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget odio.",
+  "resourcePath":"help/kkk.mp4",
+  "createUserId": "45648dsfsd44adf",
+  "createUser": "寒光",
+  "createTime": "2016-02-10 11:12:33",
+  "updateUserId": "546awer321df",
+  "updateUser": "打卡机",
+  "updateTime": "2016-02-10 11:12:33"
+}
+\end{lstlisting}
+
+
+\subsection{help/delete   删除菜单}
+dataType: 'json', type: "POST",data:\{id:**\},传参 节点id。
+
+
+\begin{lstlisting}
+
+\end{lstlisting}
+
+\subsection{help/search   查找内容}
+dataType: 'json', type: "POST",data:\{context:**\},传参 需要搜索内容。
+
+
+\begin{lstlisting}
+
+\end{lstlisting}
+
+\subsection{help/\{id\}     根据菜单 主键 id 查 内容}
+dataType: 'json', type: "POST",data:\{id:**\},传参 节点id。
+
+
+\begin{lstlisting}
+{
+  "id": "1235477",
+  "helpId": "25412124",
+  "text": "新增备课Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget odio.",
+  "resourcePath":"help/kkk.mp4",
+  "createUserId": "45648dsfsd44adf",
+  "createUser": "寒光",
+  "createTime": "2016-02-10 11:12:33",
+  "updateUserId": "546awer321df",
+  "updateUser": "打卡机",
+  "updateTime": "2016-02-10 11:12:33"
+}
+\end{lstlisting}
+
+\subsection{help/showResource 获取视频资源信息}
+dataType: 'json', type: "POST",data:\{id:**\},传参 节点id。
+
+\subsection{file/upload   上传文件}
+dataType: 'json', type: "POST", <input type="file" name="resourceFile"> 标签 name 为resourceFile。
+
+
+
+\end{document}

@@ -1,0 +1,169 @@
+%!TEX program = xelatex
+\documentclass[UTF8]{ctexart}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+\title{基础平台 技术构成与模块说明}
+\author{黑志强}
+\date{\today}
+
+\begin{document}
+ \maketitle
+ \tableofcontents
+
+
+
+\section{base platform 相关模块 }
+\begin{figure}[ht!]
+\center{\includegraphics[width=\linewidth]{1.png}}
+\end{figure}
+
+edu-cas-client
+
+edu-cas-server
+
+edu-platform-interface  (jar)
+
+edu-data-service (war)
+
+edu-knowledge-hierarchy-interface
+
+edu-knowledge-hierarchy-services (war)
+
+edu-platform-webapp20151204 (war)
+
+edu-open-api (war，给互动教学提供接口)
+
+edu-statistics (edu-statistics-interface edu-statistics-service )
+
+edu-platform-data-sysnc (区校文件同步)
+
+
+\subsection{edu-platform-interface，edu-data-service}
+
+\subsubsection{业务划分:}
+权限管理：应用管理，资源管理，角色管理，用户管理，用户与学段学科关联（rbac）
+
+组织信息：学校，年级，班级，教学计划，认知层次，能力体系
+
+人员信息：老师，家长，学生，普通用户, 生源
+
+课程数据：学段，学科，教材版本，册，学期
+
+还包括，登录，密码，
+
+\subsubsection{技术构成:}
+groovy，gorm,spring boot,spring context，dubbo
+
+工具：Apache commons-lang3，commons-beanutils，poi
+
+
+
+\subsection{edu-knowledge-hierarchy-interface,edu-knowledge-hierarchy-services}
+\subsubsection{业务划分:}
+知识体系：知识点，教材及章节
+
+    资源：电子教材，课外读物，教学资源，教学资源推送，教学资源报错
+
+题库管理：试题查询（按照知识点和教材）
+
+诊断计划：诊断计划管理，诊断计划，诊断计划审核
+
+试题组卷：手工组卷，自动组卷，诊断计划组卷
+
+成套试卷：成套试卷，试卷与章节关联
+
+试题推送：试题推送，推送结果
+
+试题遴选：试题审核，改派，审核结果，改派结果
+
+校级管理：教学巡视，统计（备课，课堂，作业，检测，课堂反馈，活动，学生梳理，校本资源）
+
+区级管理：统计（备课，作业，检测，课堂反馈，活动，学生梳理，校本资源，课堂）
+
+还包含以下：数据推送，学校类型，消息公告，用户验证
+
+
+\subsubsection{技术构成:}
+alibaba druid(数据库连接池),mybatis,spring boot,spring context，dubbo
+
+工具：guava，Apache commons-lang3，commons-beanutils，poi
+
+
+\subsection{edu-open-api}
+\subsubsection{业务划分:}
+为互动教学，自主学习提供接口；
+
+依赖 edu-knowledge-hierarchy-interface，edu-platform-interface
+\subsubsection{技术构成:}
+jboss resteasy（RESTful Web Services ，用于规范基于HTTP的RESTful Web Services的API）,
+mybatis,spring boot,spring context，dubbo
+
+工具：guava，commons-beanutils，poi
+
+
+\subsection{edu-platform-webapp}
+
+\subsubsection{技术构成:}
+前端基于ace template （ace基于bootstrap，ace本身集成了大量的常用的js插件）,还用到了插件有bootstrap-tokenfield（input 框中 关键字），ztree，bootstrap-treeview（知识点树，章节树），toastmessage
+
+后端：spring mvc, spring context，dubbo
+
+工具：guava，Apache commons-lang3，commons-beanutils，poi(模板下载，学校，教师，学生，教材 下载用到),dox4j(试卷下载用到，对富文本支持比较好)
+
+\begin{thebibliography}{1}
+
+\bibitem{}
+\newblock {\em resteasy}
+\newblock http://resteasy.jboss.org/
+
+\bibitem{}
+\newblock {\em spring framework}
+\newblock http://spring.io/
+
+\bibitem{}
+\newblock {\em mybatis}
+\newblock https://github.com/mybatis/mybatis-3
+
+\bibitem{}
+\newblock {\em Apache Software Fundation}
+\newblock http://www.apache.org/
+
+\end{thebibliography}
+
+\end{document}
